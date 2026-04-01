@@ -95,6 +95,41 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
+app.get('/api/conversations', async (req, res) => {
+  try {
+    const response = await fetch(
+      `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Conversations?sort[0][field]=Timestamp&sort[0][direction]=desc`,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.AIRTABLE_TOKEN}`
+        }
+      }
+    )
+
+    const data = await response.json()
+    console.log('Airtable response:', JSON.stringify(data))
+
+    if (!data.records) {
+      console.error('No records in response:', data)
+      return res.status(500).json({ error: 'Invalid Airtable response', details: data })
+    }
+
+    const conversations = data.records.map(record => ({
+      id: record.id,
+      timestamp: record.fields.Timestamp || '',
+      question: record.fields['Employee Question'] || '',
+      response: record.fields['AI Response'] || '',
+      sessionId: record.fields['Session ID'] || ''
+    }))
+
+    res.json(conversations)
+
+  } catch (error) {
+    console.error('Airtable fetch error:', error)
+    res.status(500).json({ error: 'Failed to fetch conversations' })
+  }
+})
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
