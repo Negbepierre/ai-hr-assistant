@@ -1,7 +1,7 @@
 # User Manual
 ## AI HR Assistant
 
-**Live URL:** Coming soon  
+**Live URL:** https://monumental-kitsune-7e6e5d.netlify.app
 **GitHub:** https://github.com/Negbepierre/ai-hr-assistant  
 **Built by:** Inegbenose Pierre
 
