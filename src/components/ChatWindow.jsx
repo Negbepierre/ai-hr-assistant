@@ -59,7 +59,7 @@ function ChatWindow() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch('https://ai-hr-assistant-production-1c18.up.railway.app/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
