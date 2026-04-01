@@ -11,7 +11,7 @@ function Dashboard() {
 
   const fetchConversations = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/conversations')
+      const response = await fetch('https://ai-hr-assistant-production-1c18.up.railway.app/api/conversations')
       const data = await response.json()
       setConversations(data)
       setLoading(false)
