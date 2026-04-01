@@ -44,8 +44,36 @@ EXPENSES:
 Always be helpful, professional and empathetic. If you do not know the answer, say so clearly and direct the employee to contact HR directly at hr@company.com
 `
 
+async function logToAirtable(question, response, sessionId) {
+  try {
+    await fetch(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Conversations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.AIRTABLE_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        records: [
+          {
+            fields: {
+              Timestamp: new Date().toISOString(),
+              'Employee Question': question,
+              'AI Response': response,
+              'Session ID': sessionId
+            }
+          }
+        ]
+      })
+    })
+    console.log('Logged to Airtable successfully')
+  } catch (error) {
+    console.error('Airtable logging error:', error)
+  }
+}
+
 app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body
+  const { messages, sessionId } = req.body
+  const lastMessage = messages[messages.length - 1].content
 
   try {
     const response = await client.messages.create({
@@ -55,7 +83,11 @@ app.post('/api/chat', async (req, res) => {
       messages: messages
     })
 
-    res.json({ content: response.content[0].text })
+    const aiResponse = response.content[0].text
+
+    logToAirtable(lastMessage, aiResponse, sessionId || 'unknown')
+
+    res.json({ content: aiResponse })
 
   } catch (error) {
     console.error('Anthropic error:', error)
